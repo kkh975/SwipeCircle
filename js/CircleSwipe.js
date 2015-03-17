@@ -1,8 +1,6 @@
 /*!*
- * 슬라이더 플러그인
- *
- * @autor Blim - Koo Chi Hoon(kkh975@naver.com)
- * @descript: 좌/우 이동, 무한 루프 여부
+ * @autor: Blim - Koo Chi Hoon(kkh975@naver.com)
+ * @license http://blim.mit-license.org/
  */
 ( function( $ ){
 
@@ -12,151 +10,112 @@
 	 * @method: 슬라이더 플러그인
 	 */
 	$.fn.circleSwipe = function( option ){
-		option.$list   = option.$list ? option.$list : $( this ).find( '> ul > li' );
-		option.$wrap   = option.$wrap ? option.$wrap : $( this ).find( '> ul' );
-		option.list    = option.$list ? option.$list.toArray() : [];
-		option.wrap    = option.$wrap ? option.$wrap.toArray() : [];
-		option.pages   = option.$pages ? option.$pages.toArray() : [];
-		option.toStart = option.$toStart ? option.$toStart.toArray() : [];
-		option.toStop  = option.$toStop ? option.$toStop.toArray() : [];
-		option.toPrev  = option.$toPrev ? option.$toPrev.toArray() : [];
-		option.toNext  = option.$toNext ? option.$toNext.toArray() : [];
+		option.$list = option.$list ? option.$list : $( this ).find( '> ul > li' );
+		option.list = option.$list ? option.$list.toArray() : [ ];
+		option.pages = option.$pages ? option.$pages.toArray() : null;
+		option.toStart = option.$toStart ? option.$toStart.toArray() : null;
+		option.toStop = option.$toStop ? option.$toStop.toArray() : null;
+		option.toPrev = option.$toPrev ? option.$toPrev.toArray() : null;
+		option.toNext = option.$toNext ? option.$toNext.toArray() : null;
 
 		return this.each( function(){
-			$( this ).data( 'scs', new CircleSwipe( option ));
-		});
+			$( this ).data( 'circleSwipe', new CircleSwipe( option ));
+		} );
 	};
 
 	/**
 	 * @method: 슬라이더쇼 시작 플러그인
 	 */
-	$.fn.slideCircleSwipe2start = function(){
+	$.fn.circleSwipe2start = function(){
 		return this.each( function(){
-			$( this ).data( 'scs' ).startSlideShow();
-		});
+			$( this ).data( 'circleSwipe' ).startSlideShow();
+		} );
 	};
 
 	/**
 	 * @method: 슬라이더쇼 정지 플러그인
 	 */
-	$.fn.slideCircleSwipe2stop = function(){
+	$.fn.circleSwipe2stop = function(){
 		return this.each( function(){
-			$( this ).data( 'scs' ).stopSlideShow();
-		});
+			$( this ).data( 'circleSwipe' ).stopSlideShow();
+		} );
 	};
 
 	/**
 	 * @method: 이전 슬라이더 이동 플러그인
 	 */
-	$.fn.slideCircleSwipe2prev = function(){
+	$.fn.circleSwipe2prev = function(){
 		return this.each( function(){
-			$( this ).data( 'scs' ).toPrev();
-		});
+			$( this ).data( 'circleSwipe' ).toPrev();
+		} );
 	};
 
 	/**
 	 * @method: 다음 슬라이더 이동 플러그인
 	 */
-	$.fn.slideCircleSwipe2next = function(){
+	$.fn.circleSwipe2next = function(){
 		return this.each( function(){
-			$( this ).data( 'scs' ).toNext();
-		});
+			$( this ).data( 'circleSwipe' ).toNext();
+		} );
 	};
 
 	/**
 	 * @method: 특정 슬라이더 이동 플러그인
 	 */
-	$.fn.slideCircleSwipe2next = function( _idx ){
+	$.fn.circleSwipe2slide = function( _idx ){
 		return this.each( function(){
-			$( this ).data( 'scs' ).toSlide( _idx );
+			$( this ).data( 'circleSwipe' ).toSlide( _idx );
 		});
 	};
 
 	/**
-	 * @method: 슬라이더 업데이트
-	 */
-	$.fn.slideSwipe2update = function( _$list ){
-		return this.each( function(){
-			$( this ).data( 'scs' ).update( _$list.toArray());
-		});
-	};
-
-	/**s
 	 * @method: 슬라이드 제거
-	 */
-	$.fn.slideSwipe2destory = function( _idx ){
+	 */       
+	$.fn.circleSwipe2destory = function( _idx ){
 		return this.each( function(){
-			$( this ).data( 'scs' ).destory();
+			$( this ).data( 'circleSwipe' ).destory();
 		});
 	};
 }( jQuery ));
 
 /**
- * @method: 레이어팝업 함수
+ * @method: circleSwipe 함수
  */
 function CircleSwipe( __setting ){
 
 	'use strict';
 
-	var TRANSITIONENDEVENT_VENDORS = [
-			'transitionEnd',
-			'transitionend',
-			'otransitionend',
-			'oTransitionEnd',
-			'webkitTransitionEnd' ],
-		ANIMATIONEVENT_VENDORS = [
-			'animationEnd',
-			'MSAnimationEnd',
-			'oanimationEnd',
-			'webkitAnimationEnd' ],
-		TRANSITION_VENDORS = [
-			'',
-			'-ms-',
-			'-o-',
-			'-moz-',
-			'-webkit-' ],
-		ANIMATION_VENDORS = [
-			'',
-			'-o-',
-			'-moz-',
-			'-webkit-' ],
-		BASE_VENDORS = [
-			'',
-			'-ms-',
-			'-o-',
-			'-moz-',
-			'-webkit-' ];
-
-	var setting = null,
-		wrap_Dom = null,
-		list_P_Dom = null,
-		list_Dom = null,
-		pages_Dom = null,
-		to_Start_Dom = null,
-		to_Stop_Dom = null,
-		to_Prev_Dom = null,
-		to_Next_Dom = null,		
+	var BASE_DISTANCE = 90,
+		setting = null,
+		D_Wrap = null,
+		D_Plist = null,
+		D_List = null,
+		D_To_Pages = null,
+		D_To_Start = null,
+		D_To_Stop = null,
+		D_To_Prev = null,
+		D_To_Next = null,
 		slide_Show_Timer = null,
 		is_Loop_Len_2 = false,
 		is_Slide_Show = false,
-		is_Slide_Showing = false,
 		is_Move = false,
 		list_Width = 0,
 		list_Len = 0,
-		cube_Radius = 0,
-		cube_Angle = 0,
-		cube_Angle_Arr = [],
+		cube_Radius = 0,			// list를 원으로 놓았을 때, 반지름
+		cube_Angle = 0,				// item의 한쪽의 각
+		list_Angle_Arr = [],		// item별 위치
 		now_Idx = 0,
-		browser_Prefix = '';
+		to_Idx = 0,
+		browser_Prefix = {};
 
 	var default_Option = {
-		list: [],					// require, 리스트
-		wrap: [],					// require, 리스트 감싸는 태그
-		pages: [],					// 슬라이더 페이징 이동
-		toStart: [],				// 애니메이션 시작 버튼
-		toStop: [],					// 애니메이션 멈춤 버튼
-		toPrev: [],					// 이전 이동 버튼
-		toNext: [],					// 다음 이동 버튼
+		wrap: null,					// require, 리스트 감싸는 태그
+		list: null,					// require, 리스트
+		pages: null,				// 슬라이더 페이징 이동
+		toStart: null,				// 애니메이션 시작 버튼
+		toStop: null,				// 애니메이션 멈춤 버튼
+		toPrev: null,				// 이전 이동 버튼
+		toNext: null,				// 다음 이동 버튼
 		startEvents: 'click',		// 슬라이드쇼 시작 이벤트
 		stopEvents: 'click',		// 슬라이드쇼 정지 이벤트
 		moveEvents: 'click',		// 이동 작동 이벤트
@@ -169,11 +128,11 @@ function CircleSwipe( __setting ){
 		before: null,				// 액션 전 콜백함수
 		active: null				// 액션 후 콜백함수
 	};
-	
+
 	var helper = { // 보조함수
 
 		/**
-		 * jQuery extend 기능
+		 * @method: jQuery extend 기능
 		 */
 		extend: function( _target, _object ){
 			var prop = null,
@@ -187,10 +146,14 @@ function CircleSwipe( __setting ){
 		},
 
 		/**
-		 * 배열 여부
+		 * @method: 배열 여부
 		 */
 		isArray: function( _arr ){
-			return Object.prototype.toString.call( _arr ) === '[object Array]';
+			if ( _arr ){
+				return Object.prototype.toString.call( _arr ) === '[object Array]';
+			}
+
+			return false;
 		},
 
 		/**
@@ -201,14 +164,14 @@ function CircleSwipe( __setting ){
 		},
 
 		/**
-		 * DOM에서 배열변환
+		 * @method: DOM에서 배열변환
 		 */
 		dom2Array: function( _dom ){
-			return Array.prototype.slice.call( _dom );
+			return _dom.length > 0 ? Array.prototype.slice.call( _dom ) : [ _dom ];
 		},
 
 		/**
-		 * 각도를 radius로 변경
+		 * @method: 각도를 radius로 변경
 		 */
 		getRadius: function( _degree ){
 			return _degree * Math.PI / 180;
@@ -218,39 +181,75 @@ function CircleSwipe( __setting ){
 		 * @method: css3의 transition 접미사
 		 * @return: {Boolean or String}
 		 */
-		getTransitionPrefix: function(){
-			var prefixes_arr = [ 'webkit', 'moz', 'o', 'ms' ],
-				tmp_dom = document.createElement( 'div' ),
-				i = prefixes_arr.length;
-			
-			while( --i > -1 ){ // 브라우저별 지원
-				if ( prefixes_arr[ i ] + 'Transition' in tmp_dom.style ){
-					return prefixes_arr[ i ];
-				}
-			}
+		getCssPrefix: function(){
+			/*TRANSITIONENDEVENT_VENDORS = [
+				'transitionEnd',
+				'transitionend',
+				'otransitionend',
+				'oTransitionEnd',
+				'webkitTransitionEnd' ]*/
+			var transitionsCss = [ '-webkit-transition', 'transition' ],
+				transformsCss = [ '-webkit-transform', 'transform' ],
+				transitionsJs = [ 'webkitTransition', 'transition' ],
+				transformsJs = [ 'webkitTransform', 'transform' ],
+				transitionsendJs = [ 'webkitTransitionEnd', 'transitionend' ],
+				styles = window.getComputedStyle( document.body, '' ),
+				prefixCss = ( Array.prototype.slice.call( styles ).join('').match( /-(webkit|moz|ms|o)-/ ) || (styles.OLink === '' && [ '', 'o' ]))[ 1 ],
+				prefixJs = ( 'WebKit|Moz|MS|O' ).match( new RegExp('(' + prefixCss + ')', 'i' ))[ 1 ],
+				isWebkit = prefixCss === 'webkit';
 
-			if ( 'transition' in tmp_dom.style ){ // 표준 지원
-				return prefixes_arr[ i ];
-			}
-
-			return false;
+			return {
+				'prefixCss': prefixCss,
+				'prefixJs': prefixJs.toLowerCase(),
+				'transitionsCss': transitionsCss[ isWebkit ? 0 : 1 ],
+				'transformsCss': transformsCss[ isWebkit ? 0 : 1 ],
+				'transformsJs': transformsJs[ isWebkit ? 0 : 1 ],
+				'transitionsJs': transitionsJs[ isWebkit ? 0 : 1 ],
+				'transitionsendJs': transitionsendJs[ isWebkit ? 0 : 1 ]
+			};
 		},
 
 		/**
-		 * @method: 애니메이션 설정
+		 * @method: css3 transition 지원 여부
+		 * @return: {Boolean}
+		 */
+		hasCss3Transition: function(){
+			var Ddiv = document.createElement( 'div' ),
+				div_style = Ddiv.style;
+
+			return browser_Prefix.transitionsJs in div_style;
+		},
+
+		// TODO
+		/**
+		 * @method: 현재 위치 알아오기
+		 */
+		getCss3TransformPos: function( _dom ){
+			var this_style = _dom.style,
+				css_txt = '';
+
+			css_txt = this_style[ browser_Prefix.transformsJs ];
+			css_txt = css_txt.substring( css_txt.indexOf( '(' ) + 1, css_txt.indexOf( 'deg' ));
+
+			return parseFloat( css_txt );
+		},
+
+		/**
+		 * @method: 전체 위치 설정
 		 */
 		setListTransition: function( _speed, _add_angle, _is_set ){
 			var angle = 0,
 				i = 0;
 
 			for ( i = 0; i < list_Len; i++ ){
-				angle = cube_Angle_Arr[ i ];
+				angle = list_Angle_Arr[ i ];
 				angle += _add_angle;
-				helper.setCss3Transition( list_Dom[ i ], _speed, angle );
 
 				if ( _is_set){
-					cube_Angle_Arr[ i ] = angle;	
+					list_Angle_Arr[ i ] = angle;	
 				}
+
+				helper.setCss3Transition( D_List[ i ], _speed, angle );
 			}
 		},
 
@@ -270,14 +269,17 @@ function CircleSwipe( __setting ){
 		 * @method: css3 설정
 		 */
 		setCss3: function( _dom, _prop, _value ){
-			var this_style = _dom.style,
-				first_upper_prop = '';
+			var this_style = _dom.style;
 
-			first_upper_prop = _prop.substring( 0, 1 ).toUpperCase();
-			first_upper_prop += _prop.substring( 1, _prop.length );
-
-			this_style[ _prop ] = this_style[ browser_Prefix + first_upper_prop ] = _value;
-		}, 
+			if ( _prop === 'transition' ){
+				this_style[ browser_Prefix.transitionsJs ] = _value;
+			} else if ( _prop === 'transform' ){
+				this_style[ browser_Prefix.transformsJs ] = _value;
+			} else {
+				this_style[ _prop ] = _value;
+				this_style[ '-' + browser_Prefix.prefixJs + '-' + _prop ] =  _value;
+			}
+		},
 
 		/**
 		 * @method: 버튼 이벤트 설정
@@ -303,91 +305,6 @@ function CircleSwipe( __setting ){
 		}
 	};
 
-	var helperCss3 = { // css3 보조 함수
-
-		/**
-		 * @method: Transit 설정
-		 */
-		setTransit: function( _dom, _pos, _time ){
-			var arr = TRANSITION_VENDORS,
-				idx = arr.length,
-				dom_style = _dom.style;
-
-			while( --idx > -1 ){
-				dom_style.setProperty( arr[ idx ] + 'transform', 'translateX('+ _pos + '%)' );
-				dom_style.setProperty( arr[ idx ] + 'transition', ( _time ? _time : 0 ) + 'ms' );
-			}
-		},
-
-		/**
-		 * @method: Transit 리스트 설정
-		 */
-		setTransitList: function( _is_set, _add_pos, _time ){
-			var pos = 0,
-				len = 0,
-				i = 0;
-
-			for ( i = 0; i < list_Len; i++ ){
-				pos = list_Pos_Arr[ i ];
-
-				if ( _add_pos ){
-					pos += _add_pos;
-				}
-
-				if ( _is_set ){
-					list_Pos_Arr[ i ] = pos;
-				}
-
-				helperCss3.setTransit( list_Dom[ i ], pos, _time );
-			}
-		},
-
-		/**
-		 * @method: Transit 종료 이벤트
-		 */
-		setTransitEnd: function( _dom, _callback ){
-			var arr = TRANSITIONENDEVENT_VENDORS,
-				idx = arr.length;
-
-			while( --idx > -1 ){
-				_dom.addEventListener( arr[ idx ], _callback, false );
-			}
-		},
-
-		/**
-		 * @method: Transit 종료 이벤트 제거
-		 */
-		removeTransitEnd: function( _dom, _callback ){
-			var arr = TRANSITIONENDEVENT_VENDORS,
-				idx = arr.length;
-
-			while( --idx > -1 ){
-				_dom.removeEventListener( arr[ idx ], _callback, false );
-			}
-		},
-
-		/**
-		 * @method: 보통 css3 설정
-		 */
-		setCommonRule: function( _dom, _prop, _value, _vendors ){
-			var dom_style = _dom.style,
-				arr = null,
-				idx = 0;
-
-			if ( _vendors ){
-				arr = _vendors;
-				idx = arr.length;
-				dom_style = _dom.style;
-
-				while( --idx > -1 ){
-					dom_style.setProperty( arr[ idx ] + _prop, _value );
-				}
-			} else {
-				dom_style.setProperty( _prop, _value );				
-			}
-		}
-	};
-
 	var touchEvents = { // 이벤트 함수
 		is_touch_start: false,
 		touch_start_x: 0,
@@ -405,21 +322,48 @@ function CircleSwipe( __setting ){
 		},
 
 		/**
+		 * @method: 이전으로 이동가능한가
+		 */
+		canPrevMove: function(){
+			// 루프가 아니면서 가장자리에 있을때
+			if ( !setting.loop && getPrevIdx() === -1 ){ 
+				return false;
+			}
+
+			return true;
+		},
+
+		/**
+		 * @method: 이후로 이동가능한가
+		 */
+		canNextMove: function(){
+			var next_idx = getNextIdx(),
+				len = ( is_Loop_Len_2 ? list_Len - 2 : list_Len ) - 1;
+
+			// 루프가 아니면서 가장자리에 있을때
+			if ( !setting.loop && ( next_idx === -1 || next_idx > len )){ 
+				return false;
+			}
+
+			return true;
+		},
+
+		/**
 		 * @method: 터치 시작 이벤트
 		 * @param: {Object} 이벤트 객체
 		 */
 		setStart: function( e ){
-
 			if ( touchEvents.is_touch_start || is_Move ){
 				return false;
 			}
 
-			setMoveBefore();
+			setAnimateBefore();
 
 			if ( !touchEvents.is_touch_start && e.type === 'touchstart' && e.touches.length === 1 ){
 				touchEvents.is_touch_start = true;
 				touchEvents.touch_start_x = e.touches[ 0 ].pageX;
 				touchEvents.touch_start_y = e.touches[ 0 ].pageY;
+				e.preventDefault();
 			}
 		},
 
@@ -429,19 +373,20 @@ function CircleSwipe( __setting ){
 		 */
 		setMove: function( e ){
 			var drag_dist = 0,
-				scroll_dist = 0,
-				len = 0,
-				i = 0;
+				scroll_dist = 0;
 
 			if ( touchEvents.is_touch_start && e.type === 'touchmove' && e.touches.length === 1 ){
 				drag_dist = e.touches[ 0 ].pageX - touchEvents.touch_start_x;	// 가로 이동 거리
 				scroll_dist = e.touches[ 0 ].pageY - touchEvents.touch_start_y;	// 세로 이동 거리
 				touchEvents.move_dx = ( drag_dist / list_Width ) * 100;			// 가로 이동 백분률
 
-				if ( Math.abs( drag_dist ) > Math.abs( scroll_dist )){ // 드래그길이가 스크롤길이 보다 클때
+				// 드래그길이가 스크롤길이 보다 클때
+				if ( Math.abs( drag_dist ) > Math.abs( scroll_dist )){ 
+					touchEvents.move_dx = Math.max( -BASE_DISTANCE, Math.min( BASE_DISTANCE, touchEvents.move_dx ));
 					helper.setListTransition( 0, touchEvents.move_dx );
-					e.preventDefault();
 				}
+				
+				e.preventDefault();
 			}
 		},
 
@@ -452,65 +397,54 @@ function CircleSwipe( __setting ){
 		setEnd: function( e ){
 			var over_touch = Math.abs( touchEvents.move_dx ) > setting.touchMinumRange,
 				is_to_next = touchEvents.move_dx < 0,
-				can_move = is_to_next ? canNextMove() : canPrevMove(),
-				time = 0;
-
-			if ( touchEvents.is_touch_start && e.type === 'touchend' && e.touches.length === 0 ){
-
+				can_move = is_to_next ? touchEvents.canNextMove() : touchEvents.canPrevMove();
+			
+			if ( touchEvents.is_touch_start && e.type === 'touchend' ){
 				if ( over_touch && can_move ){
-					time = Math.floor(( touchEvents.move_dx / 100 ) * setting.duration );
-					time = setting.duration - Math.abs( time );
-					time = Math.max( 0, Math.min( setting.duration, time ));
-
-					// TODO
-				} else { 
+					is_Move = false;
+					is_to_next ? toNext() : toPrev();
+				} else {
 					helper.setListTransition( setting.duration, 0 );
 				}
-				
-				touchEvents.setInitVaiable();
-				e.preventDefault();
 			}
+
+			if ( e.type === 'touchcancel' ){
+				is_Move = false;
+			}
+			
+			touchEvents.setInitVaiable();
 		}
 	};
-
-	/**
-	 * @method: 지원하나?
-	 */
-	function isSupport(){
-		var tmp_dom = null;
-
-		if ( typeof window.addEventListener !== 'function' ){
-			return false;
-		}
-
-		return true;
-	}
 
 	/**
 	 * @method: 생성자
 	 */
 	function constructor(){
 		var tmp_dom = null,
-			evt_arr = [],
-			evt_idx = 0,
-			idx = 0,
-			evt = '';
+			idx = 0;
 
+		// 플러그인에서 배열로 넘겨줄때 패스
+		// javascrit로 바로 들어오면 dom2Array
 		setting = helper.extend( default_Option, __setting );
-		list_Dom = helper.isArray( setting.list ) ? helper.dom2Array( setting.list ) : setting.list;
-		pages_Dom = helper.isArray( setting.pages ) ? helper.dom2Array( setting.pages ) : setting.pages;
-		to_Start_Dom = helper.isArray( setting.toStart ) ? helper.dom2Array( setting.toStart ) : setting.toStart;
-		to_Stop_Dom = helper.isArray( setting.toStop ) ? helper.dom2Array( setting.toStop ) : setting.toStop;
-		to_Prev_Dom = helper.isArray( setting.toPrev ) ? helper.dom2Array( setting.toPrev ) : setting.toPrev;
-		to_Next_Dom = helper.isArray( setting.toNext ) ? helper.dom2Array( setting.toNext ) : setting.toNext;
-
-		list_Len = list_Dom.length;
-		list_P_Dom = list_Dom[ 0 ].parentNode;
-		wrap_Dom = list_P_Dom.parentNode;
-		browser_Prefix = helper.getTransitionPrefix();
+		D_Plist = helper.isArray( setting.wrap ) ? setting.wrap : helper.dom2Array( setting.wrap ); 
+		D_List = helper.isArray( setting.list ) ? setting.list : helper.dom2Array( setting.list ); 
+		D_To_Pages = helper.isArray( setting.pages ) ? setting.pages : helper.dom2Array( setting.pages );
+		D_To_Start = helper.isArray( setting.toStart ) ? setting.toStart : helper.dom2Array( setting.toStart );
+		D_To_Stop = helper.isArray( setting.toStop ) ? setting.toStop : helper.dom2Array( setting.toStop );
+		D_To_Prev = helper.isArray( setting.toPrev ) ? setting.toPrev : helper.dom2Array( setting.toPrev );
+		D_To_Next = helper.isArray( setting.toNext ) ? setting.toNext : helper.dom2Array( setting.toNext );
+		
+		browser_Prefix = helper.getCssPrefix();
+		list_Len = D_List.length;
+		D_Plist = D_Plist[ 0 ];
+		D_Wrap = D_Plist.parentNode;
 		setting.touchMinumRange = Math.max( 1, Math.min( 100, setting.touchMinumRange ));
 
-		if ( list_Len <= 1 ){ // list이거나, 리스트가 1이하이면 함수 종료
+		if ( list_Len < 2 ){ // list이거나, 리스트가 1이하이면 함수 종료
+			return false;
+		}
+
+		if ( !( helper.hasCss3Transition() && 'addEventListener' in window )){
 			return false;
 		}
 
@@ -519,7 +453,7 @@ function CircleSwipe( __setting ){
 				is_Slide_Show = setting.slideShowTime;
 
 				if ( is_Slide_Show ){ // true일때, 숫자값 대입
-					setting.slideShowTime = 3000;
+					setting.slideShowTime = default_Option.slideShowTime;
 				}
 			}
 
@@ -538,101 +472,142 @@ function CircleSwipe( __setting ){
 			}
 		}
 
-		if ( to_Start_Dom ){ // 애니메이션 시작 버튼
-			helper.setBtnEvent( to_Start_Dom, setting.startEvents, function(){
-				is_Slide_Showing = true;
-				startSlideShow();
-			});
+		if ( D_To_Start ){ // 애니메이션 시작 버튼
+			helper.setBtnEvent( D_To_Start, setting.startEvents, startSlideShow );
 		}
 
-		if ( to_Stop_Dom ){ // 애니메이션 멈춤 버튼
-			helper.setBtnEvent( to_Stop_Dom, setting.stopEvents, function(){
-				is_Slide_Showing = false;
-				stopSlideShow();
-			});
+		if ( D_To_Stop ){ // 애니메이션 멈춤 버튼
+			helper.setBtnEvent( D_To_Stop, setting.stopEvents, stopSlideShow );
 		}
 
-		if ( to_Prev_Dom ){ // 왼쪽 버튼
-			helper.setBtnEvent( to_Prev_Dom, setting.moveEvents, toPrev );
+		if ( D_To_Prev ){ // 왼쪽 버튼
+			helper.setBtnEvent( D_To_Prev, setting.moveEvents, toPrev );
 		}
 
-		if ( to_Next_Dom ){ // 오른쪽 버튼
-			helper.setBtnEvent( to_Next_Dom, setting.moveEvents, toNext );
+		if ( D_To_Next ){ // 오른쪽 버튼
+			helper.setBtnEvent( D_To_Next, setting.moveEvents, toNext );
 		}
 
-		if ( pages_Dom ){ // 페이징 이동
-			helper.setBtnEvent( pages_Dom, setting.moveEvents, function( _idx ){
+		if ( D_To_Pages ){ // 페이징 이동
+			helper.setBtnEvent( D_To_Pages, setting.moveEvents, function( _idx ){
 				toSlide( _idx );
 			});
 		}
 
 		if ( list_Len === 2 && setting.loop ){ // 루프이면서 리스트가 두개일때
-			tmp_dom = list_Dom[ 0 ].cloneNode( true ); // 처음 노드 복사
-			list_Dom.push( tmp_dom );
-			list_P_Dom.appendChild( tmp_dom );
+			tmp_dom = D_List[ 0 ].cloneNode( true ); // 처음 노드 복사
+			D_List.push( tmp_dom );
+			D_Plist.appendChild( tmp_dom );
 
-			tmp_dom = list_Dom[ 1 ].cloneNode( true ); // 두번째 노드 복사
-			list_Dom.push( tmp_dom );
-			list_P_Dom.appendChild( tmp_dom );
+			tmp_dom = D_List[ 1 ].cloneNode( true ); // 두번째 노드 복사
+			D_List.push( tmp_dom );
+			D_Plist.appendChild( tmp_dom );
 
 			is_Loop_Len_2 = true;
 			list_Len = 4;
 		}
 
-		idx = list_Dom.length;
+		idx = D_List.length;
 
 		window.addEventListener( 'load', setInitStyle, false );
-		wrap_Dom.addEventListener( 'touchstart', touchEvents.setStart );
-		wrap_Dom.addEventListener( 'touchmove', touchEvents.setMove );
-		wrap_Dom.addEventListener( 'touchend', touchEvents.setEnd );
-		wrap_Dom.addEventListener( 'touchcancel', touchEvents.setEnd );
+		D_Wrap.addEventListener( 'touchstart', touchEvents.setStart );
+		D_Wrap.addEventListener( 'touchmove', touchEvents.setMove );
+		D_Wrap.addEventListener( 'touchend', touchEvents.setEnd );
+		D_Wrap.addEventListener( 'touchcancel', touchEvents.setEnd );
+
+		while( --idx > -1 ){ 
+			// 데이터 마크
+			D_List[ idx ].setAttribute( 'data-swipe-idx', idx );
+			
+			// 포커스시 애니메이션 on/off
+			D_List[ idx ].addEventListener( 'focus', stopSlideShow, false );
+			D_List[ idx ].addEventListener( 'blur', startSlideShow, false );
+
+			// transition event
+			D_List[ idx ].addEventListener( browser_Prefix.transitionsendJs, toSlideAnimateAfter, false );
+		}
+
+		return true;
 	}
 
+	// TODO
 	/**
 	 * @method: 초기화 스타일
 	 */
 	function setInitStyle(){
-		var angle = 0,
+		var css_dom = null,
+			css_txt = '',
+			angle = 0,
 			radian = 0,
 			x_pos = 0,
 			z_pos = 0,
 			len = 0,
 			i = 0;
 
-		list_Width = wrap_Dom.offsetWidth;
+		list_Width = D_Wrap.offsetWidth;
 		cube_Radius = list_Width / 2;
 		cube_Angle = 360 / list_Len;
 
-		wrap_Dom.style.cssText = 'background: #fff; overflow: hidden;';
-		helperCss3.setCommonRule( wrap_Dom, 'perspective', ( list_Width * 2 ) + 'px', TRANSITION_VENDORS );
+		helper.setCss3( D_Wrap, 'perspective', ( list_Width * 2 ) + 'px' );
+		helper.setCss3( D_Wrap, 'user-select', 'none' );
 
-		list_P_Dom.style.cssText = 'position: relative; width: 100%; height: 100%; ';
-		helperCss3.setCommonRule( list_P_Dom, 'transform-style', 'preserve-3d' , TRANSITION_VENDORS );
-		helperCss3.setCommonRule( list_P_Dom, 'transform', 'scale(0.75)' , TRANSITION_VENDORS );
+		css_txt = 'position: relative; ';
+		css_txt += 'width: 100%; ';
+		css_txt += 'height: 100%; ';
+		D_Plist.style.cssText = css_txt;
+		helper.setCss3( D_Plist, 'transformStyle', 'preserve-3d' );
+		helper.setCss3( D_Plist, 'transform', 'scale(0.75)' );
 
 		for ( i = 0, len = list_Len; i < len; i++ ){
 			angle = cube_Angle * i;
 			radian = helper.getRadius( angle );
+			// TODO, 설계도 그리기
 			x_pos = Math.round( Math.sin( radian ) * cube_Radius );
 			z_pos = Math.round( Math.cos( radian ) * cube_Radius );
-			cube_Angle_Arr.push( angle );
 
-			list_Dom[ i ].style.cssText = 'position: absolute; width: 100%; height: 100%; ';
-			helperCss3.setCommonRule( list_Dom[ i ], 'backface-visibility', 'visible', TRANSITION_VENDORS );
-			helperCss3.setCommonRule( list_Dom[ i ], 'transform', 'translateX(' + x_pos + 'px) translateZ(' + z_pos + 'px)', TRANSITION_VENDORS );
-			helperCss3.setCommonRule( list_Dom[ i ], 'user-select', 'none', BASE_VENDORS );
+			list_Angle_Arr.push( angle );
 
-			// 이벤트
-			list_Dom[ i ].addEventListener( 'focus', stopSlideShow, false );
-			list_Dom[ i ].addEventListener( 'blur', startSlideShow, false );
+			css_txt = 'position: absolute; ';
+			css_txt += 'width: 100%; ';
+			css_txt += 'height: 100%; ';
+			css_txt += 'height: 100%; ';
+			D_List[ i ].style.cssText = css_txt;
+
+			css_txt = 'translateX(' + x_pos + 'px) translateZ(' + z_pos + 'px) ';
+			helper.setCss3( D_List[ i ], 'transform', css_txt );
+			helper.setCss3( D_List[ i ], 'backfaceVisibility', 'hidden' );
 		}
 
-		helperCss3.setTransitEnd( wrap_Dom, setMoveAfter );
-		helperCss3.setTransitSpin();
 		startSlideShow();
 
 		if ( typeof setting.create === 'function' ){ // 생성 후 콜백
-			setting.create( getIdx());
+			setting.create( getNowIdx());
+		}
+	}
+
+	/**
+	 * @method: 제거
+	 */
+	function destory(){
+		var idx = D_List.length;
+
+		window.removeEventListener( 'load', setInitStyle, false );
+		D_Wrap.removeEventListener( 'touchstart', touchEvents.setStart );
+		D_Wrap.removeEventListener( 'touchmove', touchEvents.setMove );
+		D_Wrap.removeEventListener( 'touchend', touchEvents.setEnd );
+		D_Wrap.removeEventListener( 'touchcancel', touchEvents.setEnd );
+		D_Plist.removeEventListener( browser_Prefix.transitionsendJs, toSlideAnimateAfter, false );
+
+		while( --idx > -1 ){
+			// 데이터 마크
+			D_List[ idx ].removeAttribute( 'data-swipe-idx' );
+
+			// 포커스시 애니메이션 on/off
+			D_List[ idx ].removeEventListener( 'focus', stopSlideShow, false );
+			D_List[ idx ].removeEventListener( 'blur', startSlideShow, false );
+
+			// transition event
+			D_List[ idx ].removeEventListener( browser_Prefix.transitionsendJs, toSlideAnimateAfter, false );
 		}
 	}
 
@@ -657,35 +632,45 @@ function CircleSwipe( __setting ){
 	 * @method: 화면 리사이즈
 	 */
 	function refreshSize(){
-		list_Width = wrap_Dom.offsetWidth;
+		list_Width = D_Wrap.offsetWidth;
+		cube_Radius = list_Width / 2;
+
+		helper.setCss3( D_Wrap, 'perspective', ( list_Width * 2 ) + 'px' );
 	}
 
 	/**
 	 * @method: 현재 포지션 얻기
 	 */
-	function getIdx(){
+	function getNowIdx(){
 		return now_Idx;
 	}
 
 	/**
 	 * @method: 현재 포지션 셋팅
 	 */
-	function setIdx( _now_idx ){
+	function setNowIdx( _now_idx ){
+		now_Idx = _now_idx;
+	}
 
-		if ( _idx < 0 ){
-			now_Idx = setting.loop ? list_Len - 1 : now_Idx;
-		} else if ( _idx > list_Len - 1 ){
-			now_Idx = setting.loop ? 0 : now_Idx;
-		} else {
-			now_Idx = _idx;
-		}
+	/**
+	 * @method: 이동할 포지션 얻기
+	 */
+	function getToIdx(){
+		return to_Idx;
+	}
+
+	/**
+	 * @method: 이동할 포지션 셋팅
+	 */
+	function setToIdx( _to_idx ){
+		to_Idx = _to_idx;
 	}
 
 	/**
 	 * @method: 이전 인덱스 얻기
 	 */
 	function getPrevIdx(){
-		var idx = getIdx();
+		var idx = getNowIdx();
 
 		if ( --idx < 0 ){
 			idx = setting.loop ? list_Len - 1 : -1;
@@ -698,7 +683,7 @@ function CircleSwipe( __setting ){
 	 * @method: 다음 인덱스 얻기
 	 */
 	function getNextIdx(){
-		var idx = getIdx();
+		var idx = getNowIdx();
 
 		if ( ++idx > list_Len - 1 ){
 			idx = setting.loop ? 0 : -1;
@@ -722,20 +707,14 @@ function CircleSwipe( __setting ){
 	}
 
 	/**
-	 * @method: 특정 슬라이더로 이동
+	 * @method: 슬라이더로 이동
 	 */
 	function toSlide( _to_idx, _way ){
-		var now_idx = getIdx(),
+		var now_idx = getNowIdx(),
 			gap = _to_idx - now_idx,
-			is_to_next = _to_idx - now_idx > 0,
-			can_move = is_to_next ? canNextMove() : canPrevMove(),
-			slide_distance = Math.abs( gap ),
-			splite_callback = null,
-			splite_time = 0,
-			len = 0,
-			i = 0;
-			
-		if ( is_Move ){ // 이동중이면 종료 
+			is_direct_access = arguments.length === 1;
+
+		if ( is_Move ){ // 이동중이면 종료
 			return false;
 		}
 
@@ -748,65 +727,109 @@ function CircleSwipe( __setting ){
 		}
 
 		// 루프이면서 길이가 2이면서 다이렉트 접근시 범위 초과이거나 같은 위치일때
-		if ( is_Loop_Len_2 && is_direct_access && ( _to_idx > 1 || _to_idx % 2 === now_idx % 2 )){ 
+		if ( is_Loop_Len_2 && is_direct_access && ( _to_idx > 1 || _to_idx % 2 === now_idx % 2 )){
 			return false;
 		}
 
-		if ( typeof _way === 'undefined' ){ // toSlide 함수를 직접 들어왔을 시
+		// toSlide 함수를 직접 들어왔을 시
+		if ( typeof _way === 'undefined' ){ 
 			_way = gap > 0 ? 'next' : 'prev';
+		} else {
+			if ( Math.abs( gap ) === list_Len - 1 ){ // toNext, toPrev일때 끝에서 끝 이동
+				gap = 1;
+			}
 		}
 
 		// 방향 교정
-		if ( is_Loop_Len_2 && is_direct_access && ( _to_idx % 2 === 1 && now_idx % 2 === 0 )){ 
+		if ( is_Loop_Len_2 && is_direct_access && ( _to_idx % 2 === 1 && now_idx % 2 === 0 )){
 			_way = 'next';
 		}
 
-		toSlideAnimateBefore( now_idx, _to_idx );
-
-		if ( slide_distance > 1 ){
-
-			// 시간 분활
-			splite_time = Math.floor( _time / slide_distance );
-			splite_callback = function(){
-				if ( --slide_distance > 0 ){
-					toSlideAnimate( _time, _way, splite_callback );
-				}
-			}
-
-			toSlideAnimate( _way, splite_callback );
-			setTimeout( function(){
-				toSlideAnimateAfter( _to_idx );
-			}, _time );
-		} else {
-			toSlideAnimate( _way );
-			setTimeout( function(){
-				toSlideAnimateAfter( _to_idx );
-			}, _time );
-		}
+		setToIdx( _to_idx );
+		toSlideAnimateBefore();
+		toSlideAnimate( setting.duration, _way );
 	}
 
 	/**
 	 * @method: 슬라이더 애니메이션 이전
 	 */
-	function toSlideAnimateBefore( _now_idx, _to_idx ){
-		setMoveBefore();
+	function toSlideAnimateBefore(){
+		var i = list_Len,
+			now_idx = getNowIdx(),
+			to_idx = getToIdx();
+
+		setAnimateBefore();
 
 		if ( typeof setting.before === 'function' ){
-			setting.before( is_Loop_Len_2 ? getIdx() % 2 : getIdx());
+			setting.before( is_Loop_Len_2 ? now_idx % 2 : now_idx );
 		}
 	}
 
-	/** 
-	 * @method: 애니메이션
+	// TODO, 알고리즘 테스트
+	/**
+	 * @method: 슬라이더 애니메이션
 	 */
-	function toSlideAnimate( _way, _callback ){
-		helperCss3.setTransitList( _way === 'next' ? -cube_Angle : cube_Angle, true );
+	function toSlideAnimate( _time, _way ){
+		var now_idx = getNowIdx(),
+			to_idx = getToIdx(),
+			now_pos = helper.getCss3TransformPos( D_List[ now_idx ] );
+
+		// touch로 접근시
+		// 사용자가 빠르게 터치해서 이미 끝으로 도달 했을 시
+		if ( now_pos % BASE_DISTANCE === 0 ){ 
+			toSlideAnimateAfter({
+				target: D_List[ now_idx ]
+			});
+		} else {
+			helper.setCss3Transition( D_List[ now_idx ], _time, _way === 'next' ? -BASE_DISTANCE : BASE_DISTANCE );
+			helper.setCss3Transition( D_List[ to_idx ], _time, 0 );	
+		}
+	}
+
+	// TODO: 알고리즘 테스트
+	/**
+	 * @method: 슬라이더 애니메이션 이후
+	 */
+	function toSlideAnimateAfter( e ){
+		var now_idx = getNowIdx(),
+			to_idx = getToIdx(),
+			prev_idx = 0,
+			next_idx = 0,
+			i = list_Len;
+
+		setNowIdx( to_idx );
+		prev_idx = getPrevIdx();
+		next_idx = getNextIdx();
+
+		list_Angle_Arr[ now_idx ] = now_idx < to_idx ? -BASE_DISTANCE : BASE_DISTANCE;
+		list_Angle_Arr[ to_idx ] = 0;
+
+		helper.setCss3Transition( D_List[ now_idx ], 0, list_Angle_Arr[ now_idx ] );
+		helper.setCss3Transition( D_List[ to_idx ], 0, list_Angle_Arr[ to_idx ] );
+
+		if ( prev_idx !== -1 ){
+			list_Angle_Arr[ prev_idx ] = -BASE_DISTANCE;
+			helper.setCss3Transition( D_List[ prev_idx ], 0, list_Angle_Arr[ prev_idx ] );
+		}
+
+		if ( next_idx !== -1 ){
+			list_Angle_Arr[ next_idx ] = BASE_DISTANCE;
+			helper.setCss3Transition( D_List[ next_idx ], 0, list_Angle_Arr[ next_idx ] );
+		}
+
+		now_idx = getNowIdx();
+
+		setAnimateAfter();
+
+		if ( typeof setting.active === 'function' ){
+			setting.active( is_Loop_Len_2 ? now_idx % 2 : now_idx );
+		}
 	}
 
 	/**
 	 * 애니메이션 이전
 	 */
-	function setMoveBefore(){
+	function setAnimateBefore(){
 		is_Move = true;
 		stopSlideShow();
 	}
@@ -814,22 +837,18 @@ function CircleSwipe( __setting ){
 	/**
 	 * 애니메이션 이후
 	 */
-	function setMoveAfter(){
+	function setAnimateAfter(){
 		is_Move = false;
 		startSlideShow();
-
-		if ( typeof setting.active === 'function' ){
-			setting.active( is_Len_2 ? getIdx() % 2 : getIdx());
-		}
 	}
 
-	if ( isSupport() && constructor()){
+	if ( constructor()){
 
 		return {
 			startSlideShow: startSlideShow,
 			stopSlideShow: stopSlideShow,
 			refreshSize: refreshSize,
-			getIdx: getIdx,
+			getIdx: getNowIdx,
 			toNext: toNext,
 			toPrev: toPrev,
 			toSlide: toSlide,

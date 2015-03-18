@@ -9,6 +9,22 @@ body { min-width: 320px; font-family: Helvetica, sans-serif; font-size: 12px; co
 li, dd { list-style: none; }
 section, footer, address, main, header { display: block; }
 
+<<<<<<< HEAD
+=======
+/* header */
+header.wrap-header {
+	margin-top:20px;
+	width: 96%;
+	padding: 0px 2%;
+}
+header.wrap-header h1 {
+	font-size:30px; 
+}
+header.wrap-header p {
+	margin-top:10px;
+}
+
+>>>>>>> gh-pages
 /* footer */
 footer.wrap-footer {
 	clear: both;

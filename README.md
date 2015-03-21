@@ -5,7 +5,7 @@ SwipeCircle
 모바일 사이트에서 많이 사용되어지는 플리킹 플러그인을 응용하여 만들어진 3D 효과 플러그인 입니다. jQuery plugin을 지원하며 슬라이더의 무한 루프와 페이징 기능등이 있습니다.
 
 ##Concept
-![concept](images/concept.png "concept")
+![concept](images/concept.png)
 
 ##How to Uas
 ####html

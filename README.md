@@ -1,8 +1,11 @@
-BaseSwipe
+SwipeCircle
 =========
 
 ##Introduce
-모바일 사이트에서 많이 사용되어지는 플리킹 플러그인입니다. 자바스크립트와 jQuery 동시에 지원하며 슬라이더의 무한 루프와 페이징 기능등 많이 사용되어지는 기능을 넣었습니다.
+모바일 사이트에서 많이 사용되어지는 플리킹 플러그인을 응용하여 만들어진 3D 효과 플러그인 입니다. jQuery plugin을 지원하며 슬라이더의 무한 루프와 페이징 기능등이 있습니다.
+
+##Concept
+![concept](images/concept.png "concept")
 
 ##How to Uas
 ####html
@@ -19,13 +22,13 @@ BaseSwipe
 
 ####css
 아래와 같이 길이와 높이값을 반드시 기입해야 합니다.
-```csss
+```css
 .listWrap {
-	width: 100%;
+	width: 200px;
 	height: 100px;
 }
 .list li {
-	width: 100%;
+	width: 200px;
 	height: 100px;
 }
 ```
@@ -33,26 +36,26 @@ BaseSwipe
 ####javascript
 jquery 플러그인을 작성할 경우 아래와 같이 작성합니다.
 ```javascript
-$( '.listWrap' ).slideSwipe( );
+$( '.listWrap' ).swipeCircle();
 ```
 
 javascript으로 작성할 경우 아래와 같이 작성합니다.
 ```javascript
-new SlideSwipe( {
+new SwipeCircle({
 	wrap: document.querySelectorAll( '.listWrap' )[ 0 ],
 	list: document.querySelectorAll( '.listWrap li' ),
-} );
+});
 ```
 
 ##method
 
 ###jquery method
-+ baseSwipe2start: 슬라이더쇼 시작
-+ baseSwipe2stop: 슬라이더쇼 정지
-+ baseSwipe2prev: 이전 슬라이더 이동
-+ baseSwipe2next: 다음 슬라이더 이동
-+ baseSwipe2slide: {index} 현재 슬라이더 인덱스
-+ baseSwipe2destory: 제거
++ swipeBase2start: 슬라이더쇼 시작
++ swipeBase2stop: 슬라이더쇼 정지
++ swipeBase2prev: 이전 슬라이더 이동
++ swipeBase2next: 다음 슬라이더 이동
++ swipeBase2slide: {index} 현재 슬라이더 인덱스
++ swipeBase2destory: 제거
 
 ###javascript method
 + startSlideShow: 슬라이더쇼 시작

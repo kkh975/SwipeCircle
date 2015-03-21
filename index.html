@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-	<title>CircleSwipe</title>
+	<title>SwipeCircle</title>
 	<meta name="Author" content="Koo Chi Hoon(kkh975@naver.com)">
-	<meta name="keywords" content="CircleSwipe" />
+	<meta name="keywords" content="SwipeCircle" />
 	<meta http-equiv="Cashe-Control" content="no-cache" />
 	<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 	<meta name="viewport" content="user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0, width=device-width" />
 	<link rel="stylesheet" href="css/style.css" />
 	<script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
-	<script type="text/javascript" src="js/CircleSwipe.js"></script>
+	<script type="text/javascript" src="js/SwipeCircle.js"></script>
 </head>
 <body>
-<<<<<<< HEAD
-=======
 	<header class="wrap-header">
-		<h1>CircleSwipe</h1>
-		<p><a href="https://github.com/kkh975/CircleSwipe">Documents in Github</a></p>
+		<h1>SwipeCircle</h1>
+		<p><a href="https://github.com/kkh975/SwipeCircle">Documents in Github</a></p>
 	</header>
 	
->>>>>>> gh-pages
 	<main>
 		<!-- example -->
 		<div class="ex wrap">
@@ -71,7 +68,7 @@
 				</div>
 
 				<script type="text/javascript">
-					$( '.section-1 .listWrap' ).circleSwipe({
+					$( '.section-1 .listWrap' ).swipeCircle({
 						$pages: $( '.section-1 .pages button' ),
 						$toStart: $( '.section-1 .to-start' ),
 						$toStop: $( '.section-1 .to-stop' ),
@@ -131,7 +128,7 @@
 				</div>
 
 				<script type="text/javascript">
-					$( '.section-2 .listWrap' ).circleSwipe({
+					$( '.section-2 .listWrap' ).swipeCircle({
 						$pages: $( '.section-2 .pages button' ),
 						$toStart: $( '.section-2 .to-start' ),
 						$toStop: $( '.section-2 .to-stop' ),
@@ -187,7 +184,7 @@
 				</div>
 
 				<script type="text/javascript">
-					$( '.section-3 .listWrap' ).circleSwipe({
+					$( '.section-3 .listWrap' ).swipeCircle({
 						$pages: $( '.section-3 .pages button' ),
 						$toStart: $( '.section-3 .to-start' ),
 						$toStop: $( '.section-3 .to-stop' ),
@@ -242,7 +239,7 @@
 				</div>
 
 				<script type="text/javascript">
-					$( '.section-4 .listWrap' ).circleSwipe({
+					$( '.section-4 .listWrap' ).swipeCircle({
 						$pages: $( '.section-4 .pages button' ),
 						$toStart: $( '.section-4 .to-start' ),
 						$toStop: $( '.section-4 .to-stop' ),
@@ -306,7 +303,7 @@
 					var Dsec5 = document.querySelectorAll( '.section-5' )[ 0 ];
 					var Ddisp = Dsec5.querySelectorAll( 'span.ststus-display' )[ 0 ];
 					var Dlist = Dsec5.querySelectorAll( '.listWrap ul' )[ 0 ];
-					var slide = new CircleSwipe({
+					var slide = new SwipeCircle({
 						wrap: Dlist,
 						list: Dlist.querySelectorAll( 'li' ),
 						pages: Dsec5.querySelectorAll( '.pages button' ),

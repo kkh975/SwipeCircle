@@ -85,28 +85,29 @@ function SwipeCircle( __setting ){
 
 	'use strict';
 
-	var BASE_DISTANCE = 90,
-		setting = null,
-		D_Wrap = null,
-		D_Plist = null,
-		D_List = null,
-		D_To_Pages = null,
-		D_To_Start = null,
-		D_To_Stop = null,
-		D_To_Prev = null,
-		D_To_Next = null,
-		slide_Show_Timer = null,
-		is_Loop_Len_2 = false,
-		is_Slide_Show = false,
-		is_Move = false,
-		list_Width = 0,
-		list_Len = 0,
-		cube_Radius = 0,			// list를 원으로 놓았을 때, 반지름
-		cube_Angle = 0,				// item의 한쪽의 각
-		list_Angle_Arr = [],		// item별 위치
-		now_Idx = 0,
-		to_Idx = 0,
-		browser_Prefix = {};
+	var BASE_DISTANCE      = 100,		// SwipeCircle의 경우, 
+		BASE_ROTATE        = 90,		// rotate가 아니기 때문에 거리와 각도를 구별
+		setting            = null,
+		D_Wrap             = null,
+		D_Plist            = null,
+		D_List             = null,
+		D_To_Pages         = null,
+		D_To_Start         = null,
+		D_To_Stop          = null,
+		D_To_Prev          = null,
+		D_To_Next          = null,
+		slide_Show_Timer   = null,
+		is_Loop_Len_2      = false,
+		is_Slide_Show      = false,
+		is_Move            = false,
+		list_Width         = 0,
+		list_Len           = 0,
+		cube_Radius        = 0,			// list를 원으로 놓았을 때, 반지름
+		cube_Angle         = 0,			// item의 한쪽의 각
+		list_Angle_Arr     = [],		// item별 위치
+		now_Idx            = 0,
+		to_Idx             = 0,
+		browser_Prefix     = {};
 
 	var default_Option = {
 		wrap: null,					// require, 리스트 감싸는 태그
@@ -220,7 +221,6 @@ function SwipeCircle( __setting ){
 			return browser_Prefix.transitionsJs in div_style;
 		},
 
-		// TODO
 		/**
 		 * @method: 현재 위치 알아오기
 		 */
@@ -229,7 +229,7 @@ function SwipeCircle( __setting ){
 				css_txt = '';
 
 			css_txt = this_style[ browser_Prefix.transformsJs ];
-			css_txt = css_txt.substring( css_txt.indexOf( '(' ) + 1, css_txt.indexOf( 'deg' ));
+			css_txt = css_txt.substring( css_txt.indexOf( '(' ) + 1, css_txt.indexOf( 'px' ));
 
 			return parseFloat( css_txt );
 		},
@@ -382,7 +382,7 @@ function SwipeCircle( __setting ){
 
 				// 드래그길이가 스크롤길이 보다 클때
 				if ( Math.abs( drag_dist ) > Math.abs( scroll_dist )){ 
-					touchEvents.move_dx = Math.max( -BASE_DISTANCE, Math.min( BASE_DISTANCE, touchEvents.move_dx ));
+					touchEvents.move_dx = Math.max( -BASE_ROTATE, Math.min( BASE_ROTATE, touchEvents.move_dx ));
 					helper.setListTransition( 0, touchEvents.move_dx );
 				}
 				
@@ -754,9 +754,9 @@ function SwipeCircle( __setting ){
 	 * @method: 슬라이더 애니메이션 이전
 	 */
 	function toSlideAnimateBefore(){
-		var i = list_Len,
-			now_idx = getNowIdx(),
-			to_idx = getToIdx();
+		var now_idx = getNowIdx(),
+			to_idx = getToIdx(),
+			i = list_Len;
 
 		setAnimateBefore();
 
@@ -774,14 +774,19 @@ function SwipeCircle( __setting ){
 			to_idx = getToIdx(),
 			now_pos = helper.getCss3TransformPos( D_List[ now_idx ] );
 
-		// touch로 접근시
+		// TODO,
+		// touch 혹은 애니메이션 접근시
 		// 사용자가 빠르게 터치해서 이미 끝으로 도달 했을 시
-		if ( now_pos % BASE_DISTANCE === 0 ){ 
+		if ( now_pos % BASE_DISTANCE === 0 ){
 			toSlideAnimateAfter({
 				target: D_List[ now_idx ]
 			});
 		} else {
-			helper.setCss3Transition( D_List[ now_idx ], _time, _way === 'next' ? -BASE_DISTANCE : BASE_DISTANCE );
+			// swipe 탄력적으로
+			// 거리:전체거리 = 남은거리(x):전체시간 -> 거리 * 전체시간 / 전체거리
+			_time = _time * ( BASE_DISTANCE - Math.abs( now_pos ) ) / BASE_DISTANCE;
+
+			helper.setCss3Transition( D_List[ now_idx ], _time, _way === 'next' ? -90 : 90 );
 			helper.setCss3Transition( D_List[ to_idx ], _time, 0 );	
 		}
 	}
@@ -801,19 +806,19 @@ function SwipeCircle( __setting ){
 		prev_idx = getPrevIdx();
 		next_idx = getNextIdx();
 
-		list_Angle_Arr[ now_idx ] = now_idx < to_idx ? -BASE_DISTANCE : BASE_DISTANCE;
+		list_Angle_Arr[ now_idx ] = now_idx < to_idx ? -BASE_ROTATE : BASE_ROTATE;
 		list_Angle_Arr[ to_idx ] = 0;
 
 		helper.setCss3Transition( D_List[ now_idx ], 0, list_Angle_Arr[ now_idx ] );
 		helper.setCss3Transition( D_List[ to_idx ], 0, list_Angle_Arr[ to_idx ] );
 
 		if ( prev_idx !== -1 ){
-			list_Angle_Arr[ prev_idx ] = -BASE_DISTANCE;
+			list_Angle_Arr[ prev_idx ] = -BASE_ROTATE;
 			helper.setCss3Transition( D_List[ prev_idx ], 0, list_Angle_Arr[ prev_idx ] );
 		}
 
 		if ( next_idx !== -1 ){
-			list_Angle_Arr[ next_idx ] = BASE_DISTANCE;
+			list_Angle_Arr[ next_idx ] = BASE_ROTATE;
 			helper.setCss3Transition( D_List[ next_idx ], 0, list_Angle_Arr[ next_idx ] );
 		}
 

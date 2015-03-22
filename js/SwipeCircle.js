@@ -797,7 +797,7 @@ function SwipeCircle( __setting ){
 			} else {
 				// swipe 탄력적으로
 				// 거리:전체거리 = 남은거리(x):전체시간 -> 거리 * 전체시간 / 전체거리
-				_time = _time * ( BASE_DISTANCE - Math.abs( now_pos ) ) / BASE_DISTANCE;
+				_time = _time * ( BASE_DISTANCE - Math.abs( now_pos )) / BASE_DISTANCE;
 
 				helper.setCss3Transition( D_List[ now_idx ], _time, _way === 'next' ? -BASE_ROTATE : BASE_ROTATE );
 				helper.setCss3Transition( D_List[ to_idx ], _time, 0 );	

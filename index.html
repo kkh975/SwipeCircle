@@ -25,7 +25,7 @@
 			</header>
 
 			<!-- Default -->
-			<!-- <section class="section-1">
+			<section class="section-1">
 				<header>
 					<h1>기본</h1>
 					<h2>상황: <span class="ststus-display">0</span></h2>
@@ -77,15 +77,18 @@
 						create: function(){
 							$( '.section-1 span.ststus-display' ).text( 'create' );
 						},
+						before: function( idx ){
+							$( '.section-1 span.ststus-display' ).text( 'before: ' + idx );
+						},
 						active: function( idx ){
-							$( '.section-1 span.ststus-display' ).text( idx );
+							$( '.section-1 span.ststus-display' ).text( 'after: ' + idx );
 						}
 					});
 				</script>
-			</section> -->
+			</section>
 
 			<!-- None loop -->
-			<!-- <section class="section-2">
+			<section class="section-2">
 				<header>
 					<h1>루프가 아닐떄</h1>
 					<h2>status: <span class="ststus-display">0</span></h2>
@@ -143,10 +146,10 @@
 						}
 					});
 				</script>
-			</section> -->
+			</section>
 
 			<!-- Length 2 -->
-			<!-- <section class="section-3">
+			<section class="section-3">
 				<header>
 					<h1>슬라이드가 두개일때</h1>
 					<h2>상황: <span class="ststus-display">0</span></h2>
@@ -198,10 +201,10 @@
 						}
 					});
 				</script>
-			</section> -->
+			</section>
 
 			<!-- Length 2 && None loop -->
-			<!-- <section class="section-4">
+			<section class="section-4">
 				<header>
 					<h1>슬라이드가 2개이면서 루프가 아닐떄</h1>
 					<h2>status: <span class="ststus-display">0</span></h2>
@@ -254,7 +257,7 @@
 						}
 					});
 				</script>
-			</section> -->
+			</section>
 
 			<!-- Javascript -->
 			<section class="section-5">
@@ -278,11 +281,6 @@
 						<li>
 							<div style="background: orange;">
 								<a href="" target="">2</a>
-							</div>
-						</li>
-						<li>
-							<div style="background: blue;">
-								<a href="" target="">3</a>
 							</div>
 						</li>
 					</ul>
@@ -309,6 +307,7 @@
 					var Ddisp = Dsec5.querySelectorAll( 'span.ststus-display' )[ 0 ];
 					var Dlist = Dsec5.querySelectorAll( '.listWrap ul' )[ 0 ];
 					var slide = new SwipeCircle({
+						slideShowTime: false,
 						wrap: Dlist,
 						list: Dlist.querySelectorAll( 'li' ),
 						pages: Dsec5.querySelectorAll( '.pages button' ),

@@ -10,13 +10,15 @@
 	 * @method: 슬라이더 플러그인
 	 */
 	$.fn.swipeCircle = function( option ){
-		option.$list = option.$list ? option.$list : $( this ).find( '> ul > li' );
-		option.list = option.$list ? option.$list.toArray() : [];
-		option.pages = option.$pages ? option.$pages.toArray() : null;
-		option.toStart = option.$toStart ? option.$toStart.toArray() : null;
-		option.toStop = option.$toStop ? option.$toStop.toArray() : null;
-		option.toPrev = option.$toPrev ? option.$toPrev.toArray() : null;
-		option.toNext = option.$toNext ? option.$toNext.toArray() : null;
+		option.$list   = option.$list ? option.$list : $( this ).find( '> ul > li' );
+		option.$wrap   = option.$wrap ? option.$wrap : $( this ).find( '> ul' );
+		option.wrap    = option.$wrap ? option.$wrap.toArray() : [];
+		option.list    = option.$list ? option.$list.toArray() : [];
+		option.pages   = option.$pages ? option.$pages.toArray() : [];
+		option.toStart = option.$toStart ? option.$toStart.toArray() : [];
+		option.toStop  = option.$toStop ? option.$toStop.toArray() : [];
+		option.toPrev  = option.$toPrev ? option.$toPrev.toArray() : [];
+		option.toNext  = option.$toNext ? option.$toNext.toArray() : [];
 
 		return this.each( function(){
 			$( this ).data( 'swipeCircle', new SwipeCircle( option ));
@@ -189,15 +191,15 @@ function SwipeCircle( __setting ){
 				'otransitionend',
 				'oTransitionEnd',
 				'webkitTransitionEnd' ]*/
-			var transitionsCss = [ '-webkit-transition', 'transition' ],
-				transformsCss = [ '-webkit-transform', 'transform' ],
-				transitionsJs = [ 'webkitTransition', 'transition' ],
-				transformsJs = [ 'webkitTransform', 'transform' ],
+			var transitionsCss   = [ '-webkit-transition', 'transition' ],
+				transformsCss    = [ '-webkit-transform', 'transform' ],
+				transitionsJs    = [ 'webkitTransition', 'transition' ],
+				transformsJs     = [ 'webkitTransform', 'transform' ],
 				transitionsendJs = [ 'webkitTransitionEnd', 'transitionend' ],
-				styles = window.getComputedStyle( document.body, '' ),
-				prefixCss = ( Array.prototype.slice.call( styles ).join('').match( /-(webkit|moz|ms|o)-/ ) || (styles.OLink === '' && [ '', 'o' ]))[ 1 ],
-				prefixJs = ( 'WebKit|Moz|MS|O' ).match( new RegExp('(' + prefixCss + ')', 'i' ))[ 1 ],
-				isWebkit = prefixCss === 'webkit';
+				styles           = window.getComputedStyle( document.body, '' ),
+				prefixCss        = ( Array.prototype.slice.call( styles ).join('').match( /-(webkit|moz|ms|o)-/ ) || (styles.OLink === '' && [ '', 'o' ]))[ 1 ],
+				prefixJs         = ( 'WebKit|Moz|MS|O' ).match( new RegExp('(' + prefixCss + ')', 'i' ))[ 1 ],
+				isWebkit         = prefixCss === 'webkit';
 
 			return {
 				'prefixCss': prefixCss,
@@ -245,7 +247,7 @@ function SwipeCircle( __setting ){
 				angle = list_Angle_Arr[ i ];
 				angle += _add_angle;
 
-				if ( _is_set){
+				if ( _is_set ){
 					list_Angle_Arr[ i ] = angle;	
 				}
 
@@ -292,7 +294,7 @@ function SwipeCircle( __setting ){
 
 			while( --evt_idx > -1 ){
 				while( --idx > -1 ){
-					evt = helper.trim( evt_arr[ evt_idx ] );
+					evt = helper.trim( evt_arr[ evt_idx ]);
 
 					( function( __idx ){
 						_doms[ idx ].addEventListener( evt, function( e ){
@@ -425,14 +427,14 @@ function SwipeCircle( __setting ){
 
 		// 플러그인에서 배열로 넘겨줄때 패스
 		// javascrit로 바로 들어오면 dom2Array
-		setting = helper.extend( default_Option, __setting );
-		D_Plist = helper.isArray( setting.wrap ) ? setting.wrap : helper.dom2Array( setting.wrap ); 
-		D_List = helper.isArray( setting.list ) ? setting.list : helper.dom2Array( setting.list ); 
+		setting    = helper.extend( default_Option, __setting );
+		D_Plist    = helper.isArray( setting.wrap ) ? setting.wrap : helper.dom2Array( setting.wrap ); 
+		D_List     = helper.isArray( setting.list ) ? setting.list : helper.dom2Array( setting.list ); 
 		D_To_Pages = helper.isArray( setting.pages ) ? setting.pages : helper.dom2Array( setting.pages );
 		D_To_Start = helper.isArray( setting.toStart ) ? setting.toStart : helper.dom2Array( setting.toStart );
-		D_To_Stop = helper.isArray( setting.toStop ) ? setting.toStop : helper.dom2Array( setting.toStop );
-		D_To_Prev = helper.isArray( setting.toPrev ) ? setting.toPrev : helper.dom2Array( setting.toPrev );
-		D_To_Next = helper.isArray( setting.toNext ) ? setting.toNext : helper.dom2Array( setting.toNext );
+		D_To_Stop  = helper.isArray( setting.toStop ) ? setting.toStop : helper.dom2Array( setting.toStop );
+		D_To_Prev  = helper.isArray( setting.toPrev ) ? setting.toPrev : helper.dom2Array( setting.toPrev );
+		D_To_Next  = helper.isArray( setting.toNext ) ? setting.toNext : helper.dom2Array( setting.toNext );
 		
 		browser_Prefix = helper.getCssPrefix();
 		list_Len = D_List.length;
@@ -530,7 +532,6 @@ function SwipeCircle( __setting ){
 		return true;
 	}
 
-	// TODO
 	/**
 	 * @method: 초기화 스타일
 	 */
@@ -561,7 +562,6 @@ function SwipeCircle( __setting ){
 		for ( i = 0, len = list_Len; i < len; i++ ){
 			angle = cube_Angle * i;
 			radian = helper.getRadius( angle );
-			// TODO, 설계도 그리기
 			x_pos = Math.round( Math.sin( radian ) * cube_Radius );
 			z_pos = Math.round( Math.cos( radian ) * cube_Radius );
 
@@ -571,6 +571,7 @@ function SwipeCircle( __setting ){
 			css_txt += 'width: 100%; ';
 			css_txt += 'height: 100%; ';
 			css_txt += 'height: 100%; ';
+			css_txt += 'visibility: ' + ( 2 > i || list_Len - 1 === i ? 'visible' : 'hidden' );
 			D_List[ i ].style.cssText = css_txt;
 
 			css_txt = 'translateX(' + x_pos + 'px) translateZ(' + z_pos + 'px) ';
@@ -731,12 +732,19 @@ function SwipeCircle( __setting ){
 			return false;
 		}
 
+		// 한칸씩만 이동하도록, 아이템간 자연스런 움직임을 위해서
+		// 끝에서 끝 이동일 경우 예외
+		if ( Math.abs( gap ) > 1 && Math.abs( gap ) !== list_Len - 1 ){
+			return false;
+		}
+
 		// toSlide 함수를 직접 들어왔을 시
 		if ( typeof _way === 'undefined' ){ 
 			_way = gap > 0 ? 'next' : 'prev';
-		} else {
-			if ( Math.abs( gap ) === list_Len - 1 ){ // toNext, toPrev일때 끝에서 끝 이동
-				gap = 1;
+
+			// 끝에서 끝 이동일 경우는 허용
+			if ( Math.abs( gap ) === list_Len - 1 ){
+				_way = now_idx === 0 ? 'prev' : 'next';
 			}
 		}
 
@@ -747,7 +755,7 @@ function SwipeCircle( __setting ){
 
 		setToIdx( _to_idx );
 		toSlideAnimateBefore();
-		toSlideAnimate( setting.duration, _way );
+		toSlideAnimate( gap, setting.duration, _way );
 	}
 
 	/**
@@ -760,38 +768,43 @@ function SwipeCircle( __setting ){
 
 		setAnimateBefore();
 
+		while( --i > -1 ){ // 선택 화면만 보이기
+			D_List[ i ].style.visibility = ( i === now_idx || i === to_idx ) ? 'visible' : 'hidden';
+		}
+
 		if ( typeof setting.before === 'function' ){
 			setting.before( is_Loop_Len_2 ? now_idx % 2 : now_idx );
 		}
 	}
 
-	// TODO, 알고리즘 테스트
 	/**
 	 * @method: 슬라이더 애니메이션
 	 */
-	function toSlideAnimate( _time, _way ){
+	function toSlideAnimate( _gap, _time, _way ){
 		var now_idx = getNowIdx(),
 			to_idx = getToIdx(),
-			now_pos = helper.getCss3TransformPos( D_List[ now_idx ] );
+			now_pos = helper.getCss3TransformPos( D_List[ now_idx ]);
 
-		// TODO,
-		// touch 혹은 애니메이션 접근시
-		// 사용자가 빠르게 터치해서 이미 끝으로 도달 했을 시
-		if ( now_pos % BASE_DISTANCE === 0 ){
-			toSlideAnimateAfter({
-				target: D_List[ now_idx ]
-			});
+		if ( now_pos === 0 ){
+			helper.setCss3Transition( D_List[ now_idx ], _time, _way === 'next' ? -BASE_ROTATE : BASE_ROTATE );
+			helper.setCss3Transition( D_List[ to_idx ], _time, 0 );
 		} else {
-			// swipe 탄력적으로
-			// 거리:전체거리 = 남은거리(x):전체시간 -> 거리 * 전체시간 / 전체거리
-			_time = _time * ( BASE_DISTANCE - Math.abs( now_pos ) ) / BASE_DISTANCE;
+			// touch로 접근시, 사용자가 빠르게 터치해서 이미 끝으로 도달 했을 시
+			if ( now_pos % BASE_DISTANCE === 0 ){
+				toSlideAnimateAfter({
+					target: D_List[ now_idx ]
+				});
+			} else {
+				// swipe 탄력적으로
+				// 거리:전체거리 = 남은거리(x):전체시간 -> 거리 * 전체시간 / 전체거리
+				_time = _time * ( BASE_DISTANCE - Math.abs( now_pos ) ) / BASE_DISTANCE;
 
-			helper.setCss3Transition( D_List[ now_idx ], _time, _way === 'next' ? -90 : 90 );
-			helper.setCss3Transition( D_List[ to_idx ], _time, 0 );	
+				helper.setCss3Transition( D_List[ now_idx ], _time, _way === 'next' ? -BASE_ROTATE : BASE_ROTATE );
+				helper.setCss3Transition( D_List[ to_idx ], _time, 0 );	
+			}
 		}
 	}
 
-	// TODO: 알고리즘 테스트
 	/**
 	 * @method: 슬라이더 애니메이션 이후
 	 */
@@ -809,20 +822,24 @@ function SwipeCircle( __setting ){
 		list_Angle_Arr[ now_idx ] = now_idx < to_idx ? -BASE_ROTATE : BASE_ROTATE;
 		list_Angle_Arr[ to_idx ] = 0;
 
-		helper.setCss3Transition( D_List[ now_idx ], 0, list_Angle_Arr[ now_idx ] );
-		helper.setCss3Transition( D_List[ to_idx ], 0, list_Angle_Arr[ to_idx ] );
+		helper.setCss3Transition( D_List[ now_idx ], 0, list_Angle_Arr[ now_idx ]);
+		helper.setCss3Transition( D_List[ to_idx ], 0, list_Angle_Arr[ to_idx ]);
 
 		if ( prev_idx !== -1 ){
 			list_Angle_Arr[ prev_idx ] = -BASE_ROTATE;
-			helper.setCss3Transition( D_List[ prev_idx ], 0, list_Angle_Arr[ prev_idx ] );
+			helper.setCss3Transition( D_List[ prev_idx ], 0, list_Angle_Arr[ prev_idx ]);
 		}
 
 		if ( next_idx !== -1 ){
 			list_Angle_Arr[ next_idx ] = BASE_ROTATE;
-			helper.setCss3Transition( D_List[ next_idx ], 0, list_Angle_Arr[ next_idx ] );
+			helper.setCss3Transition( D_List[ next_idx ], 0, list_Angle_Arr[ next_idx ]);
 		}
 
 		now_idx = getNowIdx();
+
+		while( --i > -1 ){ // 선택 화면만 보이기
+			D_List[ i ].style.visibility = ( i === now_idx || i === prev_idx || i === next_idx ) ? 'visible' : 'hidden';
+		}
 
 		setAnimateAfter();
 

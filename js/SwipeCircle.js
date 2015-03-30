@@ -302,15 +302,22 @@ function SwipeCircle( __setting ){
 		 * @method: css3 설정
 		 */
 		setCss3: function( _dom, _prop, _value ){
-			var this_style = _dom.style;
+			var this_style = _dom.style, tmp;
 
 			if ( _prop === 'transition' ){
 				this_style[ browser_Prefix.transitionsJs ] = _value;
 			} else if ( _prop === 'transform' ){
 				this_style[ browser_Prefix.transformsJs ] = _value;
 			} else {
-				this_style[ _prop ] = _value;
 				this_style[ '-' + browser_Prefix.prefixJs + '-' + _prop ] =  _value;
+				this_style[ _prop ] = _value;
+
+				 // camel 표기법으로
+				tmp = _prop.split( '-' );
+				tmp = tmp.map( function( val, idx, arr ){
+					return idx === 0 ? val : val.substring( 0, 1 ).toUpperCase() + val.substring( 1, val.length );
+				});
+				this_style[ tmp.join( '' ) ] = _value;
 			}
 		},
 
@@ -593,7 +600,7 @@ function SwipeCircle( __setting ){
 		css_txt += 'width: 100%; ';
 		css_txt += 'height: 100%; ';
 		D_Plist.style.cssText = css_txt;
-		helper.setCss3( D_Plist, 'transformStyle', 'preserve-3d' );
+		helper.setCss3( D_Plist, 'transform-style', 'preserve-3d' );
 		helper.setCss3( D_Plist, 'transform', 'scale(0.75)' );
 
 		for ( i = 0, len = list_Len; i < len; i++ ){
@@ -613,7 +620,7 @@ function SwipeCircle( __setting ){
 
 			css_txt = 'translateX(' + x_pos + 'px) translateZ(' + z_pos + 'px) ';
 			helper.setCss3( D_List[ i ], 'transform', css_txt );
-			helper.setCss3( D_List[ i ], 'backfaceVisibility', 'hidden' );
+			helper.setCss3( D_List[ i ], 'backface-visibility', 'hidden' );
 		}
 
 		startSlideShow();

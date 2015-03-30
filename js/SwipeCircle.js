@@ -167,10 +167,35 @@ function SwipeCircle( __setting ){
 		},
 
 		/**
-		 * @method: DOM에서 배열변환
+		 * @method: DOM에서 배열변환(Array.slice 안먹힘)
 		 */
 		dom2Array: function( _dom ){
-			return _dom.length > 0 ? Array.prototype.slice.call( _dom ) : [ _dom ];
+			var arr = [],
+				i = 0,
+				len = _dom.length;
+
+			if ( len > 0 ){
+				for ( i = 0; i < len; i++ ){
+					arr.push( _dom[ len ] );
+				}
+			} else {
+				arr.push( _dom );
+			}
+
+			return arr;
+		},
+
+		/**
+		 * @method: DOM에서 배열변환(Array.slice 안먹힘)
+		 */
+		object2Array: function( _obj ){
+			var arr = [];
+
+			for ( var key in _obj ){
+				arr.push( _obj[ key ] );
+			}
+
+			return arr;
 		},
 
 		/**
@@ -197,7 +222,7 @@ function SwipeCircle( __setting ){
 				transformsJs     = [ 'webkitTransform', 'transform' ],
 				transitionsendJs = [ 'webkitTransitionEnd', 'transitionend' ],
 				styles           = window.getComputedStyle( document.body, '' ),
-				prefixCss        = ( Array.prototype.slice.call( styles ).join('').match( /-(webkit|moz|ms|o)-/ ) || (styles.OLink === '' && [ '', 'o' ]))[ 1 ],
+				prefixCss        = ( helper.object2Array( styles ).join('').match( /-(webkit|moz|ms|o)-/ ) || (styles.OLink === '' && [ '', 'o' ]))[ 1 ],
 				prefixJs         = ( 'WebKit|Moz|MS|O' ).match( new RegExp('(' + prefixCss + ')', 'i' ))[ 1 ],
 				isWebkit         = prefixCss === 'webkit';
 

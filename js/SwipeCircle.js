@@ -302,22 +302,15 @@ function SwipeCircle( __setting ){
 		 * @method: css3 설정
 		 */
 		setCss3: function( _dom, _prop, _value ){
-			var this_style = _dom.style, tmp;
+			var this_style = _dom.style;
 
 			if ( _prop === 'transition' ){
 				this_style[ browser_Prefix.transitionsJs ] = _value;
 			} else if ( _prop === 'transform' ){
 				this_style[ browser_Prefix.transformsJs ] = _value;
 			} else {
-				this_style[ '-' + browser_Prefix.prefixJs + '-' + _prop ] =  _value;
 				this_style[ _prop ] = _value;
-
-				 // camel 표기법으로
-				tmp = _prop.split( '-' );
-				tmp = tmp.map( function( val, idx, arr ){
-					return idx === 0 ? val : val.substring( 0, 1 ).toUpperCase() + val.substring( 1, val.length );
-				});
-				this_style[ tmp.join( '' ) ] = _value;
+				this_style[ '-' + browser_Prefix.prefixJs + '-' + _prop ] =  _value;
 			}
 		},
 

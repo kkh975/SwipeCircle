@@ -172,17 +172,23 @@ function SwipeCircle( __setting ){
 		dom2Array: function( _dom ){
 			var arr = [],
 				i = 0,
+				len = 0;
+
+			if ( _dom ){
 				len = _dom.length;
 
-			if ( len > 0 ){
-				for ( i = 0; i < len; i++ ){
-					arr.push( _dom[ len ] );
+				if ( len > 0 ){
+					for ( i = 0; i < len; i++ ){
+						arr.push( _dom[ i ] );
+					}
+				} else {
+					arr.push( _dom );
 				}
-			} else {
-				arr.push( _dom );
-			}
 
-			return arr;
+				return arr;
+			} else {
+				return null;
+			}
 		},
 
 		/**
@@ -456,16 +462,16 @@ function SwipeCircle( __setting ){
 		setting    = helper.extend( default_Option, __setting );
 		D_Plist    = helper.isArray( setting.wrap ) ? setting.wrap : helper.dom2Array( setting.wrap ); 
 		D_List     = helper.isArray( setting.list ) ? setting.list : helper.dom2Array( setting.list ); 
-		D_To_Pages = helper.isArray( setting.pages ) ? setting.pages : helper.dom2Array( setting.pages );
-		D_To_Start = helper.isArray( setting.toStart ) ? setting.toStart : helper.dom2Array( setting.toStart );
-		D_To_Stop  = helper.isArray( setting.toStop ) ? setting.toStop : helper.dom2Array( setting.toStop );
-		D_To_Prev  = helper.isArray( setting.toPrev ) ? setting.toPrev : helper.dom2Array( setting.toPrev );
-		D_To_Next  = helper.isArray( setting.toNext ) ? setting.toNext : helper.dom2Array( setting.toNext );
-		
-		browser_Prefix = helper.getCssPrefix();
+
+		if ( !D_List || !D_Plist ){ // 필수요소 체크
+			return false;
+		}
+
 		list_Len = D_List.length;
 		D_Plist = D_Plist[ 0 ];
 		D_Wrap = D_Plist.parentNode;
+
+		browser_Prefix = helper.getCssPrefix();
 		setting.touchMinumRange = Math.max( 1, Math.min( 100, setting.touchMinumRange ));
 
 		if ( list_Len < 2 ){ // list이거나, 리스트가 1이하이면 함수 종료
@@ -500,23 +506,28 @@ function SwipeCircle( __setting ){
 			}
 		}
 
-		if ( D_To_Start ){ // 애니메이션 시작 버튼
+		if ( setting.toStart ){ // 애니메이션 시작 버튼
+			D_To_Start = helper.isArray( setting.toStart ) ? setting.toStart : helper.dom2Array( setting.toStart );
 			helper.setBtnEvent( D_To_Start, setting.startEvents, startSlideShow );
 		}
 
-		if ( D_To_Stop ){ // 애니메이션 멈춤 버튼
+		if ( setting.toStop ){ // 애니메이션 멈춤 버튼
+			D_To_Stop  = helper.isArray( setting.toStop ) ? setting.toStop : helper.dom2Array( setting.toStop );
 			helper.setBtnEvent( D_To_Stop, setting.stopEvents, stopSlideShow );
 		}
 
-		if ( D_To_Prev ){ // 왼쪽 버튼
+		if ( setting.toPrev ){ // 왼쪽 버튼
+			D_To_Prev  = helper.isArray( setting.toPrev ) ? setting.toPrev : helper.dom2Array( setting.toPrev );
 			helper.setBtnEvent( D_To_Prev, setting.moveEvents, toPrev );
 		}
 
-		if ( D_To_Next ){ // 오른쪽 버튼
+		if ( setting.toNext ){ // 오른쪽 버튼
+			D_To_Next  = helper.isArray( setting.toNext ) ? setting.toNext : helper.dom2Array( setting.toNext );
 			helper.setBtnEvent( D_To_Next, setting.moveEvents, toNext );
 		}
 
-		if ( D_To_Pages ){ // 페이징 이동
+		if ( setting.pages ){ // 페이징 이동
+			D_To_Pages = helper.isArray( setting.pages ) ? setting.pages : helper.dom2Array( setting.pages );
 			helper.setBtnEvent( D_To_Pages, setting.moveEvents, function( _idx ){
 				toSlide( _idx );
 			});

@@ -396,7 +396,7 @@ function SwipeCircle( __setting ){
 				touchEvents.is_touch_start = true;
 				touchEvents.touch_start_x = e.touches[ 0 ].pageX;
 				touchEvents.touch_start_y = e.touches[ 0 ].pageY;
-				e.preventDefault();
+				// e.preventDefault();
 			}
 		},
 
